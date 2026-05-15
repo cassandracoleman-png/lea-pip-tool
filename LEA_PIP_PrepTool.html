@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEA PIP Prep Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --teal: #2A7F7F;
+    --teal-light: #E6F4F4;
+    --gold: #C9A84C;
+    --gold-light: #FDF6E3;
+    --brown: #5C3D1B;
+    --blue-light: #EAF2FB;
+    --gray-50: #F7F7F5;
+    --gray-100: #EEEDE9;
+    --gray-300: #C8C7C0;
+    --gray-500: #888780;
+    --gray-700: #4A4A46;
+    --gray-900: #1C1C1A;
+    --red: #C0392B;
+    --white: #FFFFFF;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .site-header {
+    background: var(--navy);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+
+  .site-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--white);
+    font-weight: 400;
+    letter-spacing: .01em;
+  }
+
+  .site-header span {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--gray-100);
+    position: sticky;
+    top: 60px;
+    z-index: 99;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    width: 0%;
+    transition: width .4s ease;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  .intro {
+    background: var(--white);
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .intro h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    color: var(--navy);
+    font-weight: 400;
+    margin-bottom: .5rem;
+  }
+
+  .intro p {
+    color: var(--gray-500);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .how-to {
+    background: var(--blue-light);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .how-to p { font-size: 13px; color: var(--navy); margin-bottom: .35rem; font-weight: 500; }
+  .how-to ol { padding-left: 1.1rem; }
+  .how-to li { font-size: 13px; color: var(--gray-700); margin-bottom: .2rem; }
+
+  .section {
+    background: var(--white);
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .section-header {
+    padding: 1.1rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .phase-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .badge-info { background: var(--blue-light); color: var(--navy); }
+  .badge-teal { background: var(--teal-light); color: var(--teal); }
+  .badge-gold { background: var(--gold-light); color: #7A5C1A; }
+  .badge-navy { background: #E8EDF3; color: var(--navy); }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy);
+  }
+
+  .section-body { padding: 1.5rem 1.75rem; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
+
+  .field { margin-bottom: 1.1rem; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 6px;
+  }
+
+  .field input,
+  .field textarea,
+  .field select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--gray-900);
+    background: var(--white);
+    transition: border-color .15s, box-shadow .15s;
+    resize: vertical;
+  }
+
+  .field input:focus,
+  .field textarea:focus,
+  .field select:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(42,127,127,0.1);
+  }
+
+  .field textarea { min-height: 80px; }
+
+  .lea-card {
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-md);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .lea-card:last-child { margin-bottom: 0; }
+
+  .lea-letter {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    margin-bottom: .25rem;
+  }
+
+  .lea-prompt {
+    font-size: 12px;
+    color: var(--gray-500);
+    font-style: italic;
+    margin-bottom: .65rem;
+    line-height: 1.5;
+  }
+
+  .goal-header {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .goal-header span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .goal-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .goal-row input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--gray-900);
+    background: var(--white);
+    transition: border-color .15s, box-shadow .15s;
+  }
+
+  .goal-row input:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(42,127,127,0.1);
+  }
+
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 1.25rem 0 .75rem;
+    padding-bottom: .4rem;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .checklist { display: flex; flex-direction: column; gap: .65rem; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--gray-700);
+    cursor: pointer;
+    line-height: 1.5;
+  }
+
+  .check-item input[type=checkbox] {
+    margin-top: 2px;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--teal);
+    cursor: pointer;
+  }
+
+  .warn-msg {
+    font-size: 12px;
+    color: var(--red);
+    margin-top: .65rem;
+    display: none;
+    padding: .5rem .75rem;
+    background: #FDF0EE;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--red);
+  }
+
+  .btn-generate {
+    width: 100%;
+    padding: 14px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    letter-spacing: .02em;
+    transition: background .15s, transform .1s;
+  }
+
+  .btn-generate:hover { background: #152E4A; }
+  .btn-generate:active { transform: scale(.99); }
+
+  .output-panel {
+    display: none;
+    background: var(--white);
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-lg);
+    margin-top: 2rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+
+  .output-header {
+    background: var(--navy);
+    padding: 1.25rem 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .output-header h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--white);
+    font-weight: 400;
+  }
+
+  .output-header p { font-size: 12px; color: rgba(255,255,255,.5); margin-top: .2rem; }
+
+  .output-body { padding: 1.75rem; }
+
+  .out-block { margin-bottom: 1.5rem; }
+  .out-block:last-child { margin-bottom: 0; }
+
+  .out-phase {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: .75rem;
+    padding: .35rem .75rem;
+    border-radius: 20px;
+    display: inline-block;
+  }
+
+  .out-phase-plan { background: #E8EDF3; color: var(--navy); }
+  .out-phase-do { background: var(--teal-light); color: var(--teal); }
+  .out-phase-check { background: var(--gold-light); color: #7A5C1A; }
+
+  .out-field { margin-bottom: 1rem; }
+  .out-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--gray-500);
+    margin-bottom: .25rem;
+  }
+
+  .out-value {
+    font-size: 14px;
+    color: var(--gray-900);
+    line-height: 1.65;
+    white-space: pre-wrap;
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    padding: .6rem .85rem;
+    border-left: 2px solid var(--gray-300);
+  }
+
+  .out-divider {
+    border: none;
+    border-top: 1px solid var(--gray-100);
+    margin: 1.5rem 0;
+  }
+
+  .goals-output { border: 1px solid var(--gray-100); border-radius: var(--radius-md); overflow: hidden; }
+
+  .goals-output-header {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 0;
+    background: var(--navy);
+    padding: .5rem .75rem;
+  }
+
+  .goals-output-header span {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,.7);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .goals-output-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 0;
+    padding: .6rem .75rem;
+    border-top: 1px solid var(--gray-100);
+    font-size: 13px;
+  }
+
+  .goals-output-row:nth-child(even) { background: var(--gray-50); }
+  .goals-output-row span:not(:first-child) { color: var(--gray-500); }
+
+  .action-row {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-copy, .btn-print {
+    padding: 9px 18px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all .15s;
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    color: var(--gray-700);
+  }
+
+  .btn-copy:hover, .btn-print:hover {
+    background: var(--gray-50);
+    border-color: var(--gray-500);
+  }
+
+  @media print {
+    .site-header, .progress-bar, .intro, .section, .btn-generate, .action-row { display: none !important; }
+    .output-panel { display: block !important; box-shadow: none; border: none; }
+    .output-header { background: var(--navy) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>LEA PIP Prep Tool</h1>
+  <span>Manager &amp; HR Use Only</span>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+<div class="container">
+
+  <div class="intro">
+    <h2>Performance Improvement Plan — Prep Document</h2>
+    <p>Complete this before the employee conversation. What you discover here populates the formal PIP record at the bottom. This document is a thinking tool — it is not part of the employee record.</p>
+    <div class="how-to">
+      <p>How to use this tool</p>
+      <ol>
+        <li>Fill in each section before sitting down with the employee.</li>
+        <li>Use the LEA reflection section during or immediately after the conversation.</li>
+        <li>Click <strong>Generate Formal PIP Record</strong> — your entries auto-populate below.</li>
+        <li>Copy or print the output and transfer it to your Word template.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- SECTION 1: EMPLOYEE INFO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="phase-badge badge-info">Employee info</span>
+      <span class="section-title">Who is this PIP for?</span>
+    </div>
+    <div class="section-body">
+      <div class="two-col">
+        <div class="field"><label>Employee name</label><input id="emp-name" type="text" placeholder="Full name"></div>
+        <div class="field"><label>Job title</label><input id="emp-title" type="text" placeholder="e.g. Account Manager"></div>
+        <div class="field"><label>Department</label><input id="emp-dept" type="text" placeholder="e.g. Sales"></div>
+        <div class="field"><label>Manager name</label><input id="mgr-name" type="text" placeholder="Full name"></div>
+        <div class="field"><label>HR representative</label><input id="hr-name" type="text" placeholder="Full name"></div>
+        <div class="field"><label>Plan start date</label><input id="start-date" type="date"></div>
+        <div class="field"><label>Plan end date</label><input id="end-date" type="date"></div>
+        <div class="field"><label>Plan type</label>
+          <select id="plan-type">
+            <option value="">Select...</option>
+            <option value="30-Day">30-Day</option>
+            <option value="60-Day">60-Day</option>
+            <option value="90-Day">90-Day</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: LEA PREP -->
+  <div class="section">
+    <div class="section-header">
+      <span class="phase-badge badge-teal">LEA prep</span>
+      <span class="section-title">Self-check before the conversation</span>
+    </div>
+    <div class="section-body">
+      <div class="lea-card" style="border-left: 3px solid var(--navy);">
+        <div class="lea-letter" style="color:var(--navy)">L — Listen</div>
+        <div class="lea-prompt">What outcome are you hoping for this employee? Resist the urge to explain first — your goal in the first 10 minutes is to hear their perspective.</div>
+        <textarea id="lea-listen" placeholder="Write your honest answer here..."></textarea>
+      </div>
+      <div class="lea-card" style="border-left: 3px solid var(--teal);">
+        <div class="lea-letter" style="color:var(--teal)">E — Empathize</div>
+        <div class="lea-prompt">What assumptions are you carrying in? What might you be missing about their situation? Empathy does not mean agreement — it means they feel heard.</div>
+        <textarea id="lea-empathize" placeholder="Write your honest answer here..."></textarea>
+      </div>
+      <div class="lea-card" style="border-left: 3px solid var(--gold);">
+        <div class="lea-letter" style="color:var(--gold)">A — Ask</div>
+        <div class="lea-prompt">What curious questions will you ask to uncover root causes — not build a case? Try: "What's getting in the way for you?" or "What would success look like from your side?"</div>
+        <textarea id="lea-ask" placeholder="List 2-3 questions you plan to ask..."></textarea>
+      </div>
+      <div class="field" style="margin-top:1rem">
+        <label>Have you given clear feedback on this before? When?</label>
+        <textarea id="prior-feedback" placeholder="Note previous conversations, dates, and any documentation..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: PLAN -->
+  <div class="section">
+    <div class="section-header">
+      <span class="phase-badge badge-navy">Plan</span>
+      <span class="section-title">Define the concern &amp; draft goals</span>
+    </div>
+    <div class="section-body">
+      <div class="field"><label>Area of concern</label><textarea id="concern-area" placeholder="Describe the specific behavior or output gap. Factual, not interpretive."></textarea></div>
+      <div class="field"><label>Specific incidents &amp; dates</label><textarea id="concern-incidents" placeholder="e.g. 3/12 — missed deadline on Q1 report without notice. 3/18 — second missed deadline..."></textarea></div>
+      <div class="field"><label>Expected standard — what good looks like</label><textarea id="concern-standard" placeholder="What does meeting the bar look like for this role?"></textarea></div>
+      <div class="field"><label>Business impact of the gap</label><textarea id="concern-impact" placeholder="How is this affecting the team, customers, or results?"></textarea></div>
+
+      <div class="section-label">Draft improvement goals</div>
+      <p style="font-size:12px;color:var(--gray-500);margin-bottom:.75rem;font-style:italic">These are starting points. Finalize them WITH the employee during the conversation.</p>
+      <div class="goal-header"><span>Specific goal</span><span>Success metric</span><span>Target date</span></div>
+      <div id="goals-container">
+        <div class="goal-row"><input type="text" placeholder="Goal 1"><input type="text" placeholder="Measurable metric"><input type="date"></div>
+        <div class="goal-row"><input type="text" placeholder="Goal 2"><input type="text" placeholder="Measurable metric"><input type="date"></div>
+        <div class="goal-row"><input type="text" placeholder="Goal 3 (optional)"><input type="text" placeholder="Measurable metric"><input type="date"></div>
+      </div>
+
+      <div class="section-label" style="margin-top:1.5rem">Resources &amp; support you will provide</div>
+      <div class="field"><label>Training / coaching</label><input id="res-training" type="text" placeholder="e.g. Weekly 1:1 coaching sessions"></div>
+      <div class="field"><label>Tools / accommodations</label><input id="res-tools" type="text" placeholder="e.g. Access to project management software"></div>
+      <div class="field"><label>Your commitment as manager</label><textarea id="res-commitment" placeholder="What will you personally do to support their success?"></textarea></div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: LEA REFLECTION -->
+  <div class="section">
+    <div class="section-header">
+      <span class="phase-badge badge-gold">After conversation</span>
+      <span class="section-title">LEA reflection — what did you learn?</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:1.1rem;font-style:italic">Fill this in during or immediately after the conversation. These notes feed directly into the formal PIP record.</p>
+      <div class="lea-card" style="border-left: 3px solid var(--navy);">
+        <div class="lea-letter" style="color:var(--navy)">L — What did you hear?</div>
+        <div class="lea-prompt">Key themes the employee raised when they had space to speak first.</div>
+        <textarea id="reflect-listen" placeholder="Summarize what the employee said..."></textarea>
+      </div>
+      <div class="lea-card" style="border-left: 3px solid var(--teal);">
+        <div class="lea-letter" style="color:var(--teal)">E — How did you respond?</div>
+        <div class="lea-prompt">Did you acknowledge their perspective before moving to solutions? What landed well?</div>
+        <textarea id="reflect-empathize" placeholder="What landed well? What would you do differently?"></textarea>
+      </div>
+      <div class="lea-card" style="border-left: 3px solid var(--gold);">
+        <div class="lea-letter" style="color:var(--gold)">A — What did your questions uncover?</div>
+        <div class="lea-prompt">New context, obstacles, or information you did not know before the conversation.</div>
+        <textarea id="reflect-ask" placeholder="New context or information the employee shared..."></textarea>
+      </div>
+      <div class="field" style="margin-top:1rem">
+        <label>Did any goals shift based on what you heard?</label>
+        <textarea id="reflect-goals-shift" placeholder="Note any adjustments made to goals after the conversation..."></textarea>
+      </div>
+      <div class="field">
+        <label>Employee's stated obstacles (in their words)</label>
+        <textarea id="reflect-obstacles" placeholder="What did they say is getting in the way?"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: HANDOFF -->
+  <div class="section">
+    <div class="section-header">
+      <span class="phase-badge" style="background:#F0EBF8;color:#4A2B7A">Handoff</span>
+      <span class="section-title">Ready to generate the formal PIP?</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:1rem">Confirm all of these before generating the official record.</p>
+      <div class="checklist">
+        <label class="check-item"><input type="checkbox" id="c1"> The employee heard the concern clearly and had space to respond.</label>
+        <label class="check-item"><input type="checkbox" id="c2"> Goals were discussed and are mutually understood, even if not fully agreed upon.</label>
+        <label class="check-item"><input type="checkbox" id="c3"> You have specific incidents with dates documented above.</label>
+        <label class="check-item"><input type="checkbox" id="c4"> Resources and support commitments are defined.</label>
+        <label class="check-item"><input type="checkbox" id="c5"> You reviewed this with HR before the employee conversation.</label>
+        <label class="check-item"><input type="checkbox" id="c6"> You are ready to follow through on your own commitments, not just theirs.</label>
+      </div>
+      <div class="warn-msg" id="check-warn">Please confirm all checklist items before generating the formal PIP record.</div>
+    </div>
+  </div>
+
+  <button class="btn-generate" onclick="generate()">Generate Formal PIP Record →</button>
+
+  <!-- OUTPUT PANEL -->
+  <div class="output-panel" id="output-panel">
+    <div class="output-header">
+      <div>
+        <h3>Formal PIP Record</h3>
+        <p>Generated from prep document — transfer to your Word template or print directly.</p>
+      </div>
+    </div>
+    <div class="output-body" id="output-body"></div>
+    <div style="padding:0 1.75rem 1.75rem">
+      <div class="action-row">
+        <button class="btn-copy" onclick="copyOutput()">Copy to clipboard</button>
+        <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function val(id) { return (document.getElementById(id).value || '').trim(); }
+
+  function getGoals() {
+    var rows = document.querySelectorAll('#goals-container .goal-row');
+    var goals = [];
+    rows.forEach(function(r) {
+      var inputs = r.querySelectorAll('input');
+      var g = inputs[0].value.trim();
+      var m = inputs[1].value.trim();
+      var d = inputs[2].value;
+      if (g) goals.push({ goal: g, metric: m, date: d || '—' });
+    });
+    return goals;
+  }
+
+  function updateProgress() {
+    var fields = ['emp-name','lea-listen','concern-area','reflect-listen'];
+    var checks = ['c1','c2','c3','c4','c5','c6'];
+    var filled = fields.filter(function(id) { return val(id).length > 0; }).length;
+    var checked = checks.filter(function(id) { return document.getElementById(id).checked; }).length;
+    var total = fields.length + 1;
+    var score = filled + (checked === checks.length ? 1 : 0);
+    document.getElementById('progress-fill').style.width = Math.round((score / total) * 100) + '%';
+  }
+
+  document.querySelectorAll('input, textarea, select').forEach(function(el) {
+    el.addEventListener('input', updateProgress);
+    el.addEventListener('change', updateProgress);
+  });
+
+  function block(phase, phaseClass, fields) {
+    var html = '<div class="out-block">';
+    html += '<span class="out-phase ' + phaseClass + '">' + phase + '</span>';
+    fields.forEach(function(f) {
+      if (!f.value) return;
+      html += '<div class="out-field"><div class="out-label">' + f.label + '</div><div class="out-value">' + f.value + '</div></div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function goalsBlock(goals) {
+    if (!goals.length) return '';
+    var rows = goals.map(function(g) {
+      return '<div class="goals-output-row"><span>' + g.goal + '</span><span>' + g.metric + '</span><span>' + g.date + '</span></div>';
+    }).join('');
+    return '<div class="out-field"><div class="out-label">Agreed improvement goals</div><div class="goals-output"><div class="goals-output-header"><span>Goal</span><span>Success metric</span><span>Target date</span></div>' + rows + '</div></div>';
+  }
+
+  function generate() {
+    var checks = ['c1','c2','c3','c4','c5','c6'];
+    var allChecked = checks.every(function(id) { return document.getElementById(id).checked; });
+    document.getElementById('check-warn').style.display = allChecked ? 'none' : 'block';
+    if (!allChecked) return;
+
+    var goals = getGoals();
+    var html = '';
+
+    html += block('Employee information', 'out-phase-plan', [
+      { label: 'Employee name', value: val('emp-name') },
+      { label: 'Job title', value: val('emp-title') },
+      { label: 'Department', value: val('emp-dept') },
+      { label: 'Manager name', value: val('mgr-name') },
+      { label: 'HR representative', value: val('hr-name') },
+      { label: 'Plan dates', value: val('start-date') && val('end-date') ? val('start-date') + '  →  ' + val('end-date') : '' },
+      { label: 'Plan type', value: val('plan-type') }
+    ]);
+
+    html += '<hr class="out-divider">';
+
+    html += block('Plan — performance concern', 'out-phase-plan', [
+      { label: 'Area of concern', value: val('concern-area') },
+      { label: 'Specific incidents & dates', value: val('concern-incidents') },
+      { label: 'Expected standard', value: val('concern-standard') },
+      { label: 'Business impact', value: val('concern-impact') }
+    ]);
+
+    html += '<hr class="out-divider">';
+
+    html += '<div class="out-block"><span class="out-phase out-phase-plan">Plan — goals & support</span>';
+    html += goalsBlock(goals);
+    html += '<div class="out-field"><div class="out-label">Training / coaching</div><div class="out-value">' + (val('res-training') || '—') + '</div></div>';
+    html += '<div class="out-field"><div class="out-label">Tools / accommodations</div><div class="out-value">' + (val('res-tools') || '—') + '</div></div>';
+    html += '<div class="out-field"><div class="out-label">Manager commitment</div><div class="out-value">' + (val('res-commitment') || '—') + '</div></div>';
+    html += '</div>';
+
+    html += '<hr class="out-divider">';
+
+    html += block('Check — LEA conversation summary', 'out-phase-check', [
+      { label: 'What the employee shared (Listen)', value: val('reflect-listen') },
+      { label: 'How you responded (Empathize)', value: val('reflect-empathize') },
+      { label: 'What questions uncovered (Ask)', value: val('reflect-ask') },
+      { label: "Employee's stated obstacles", value: val('reflect-obstacles') },
+      { label: 'Goal adjustments after conversation', value: val('reflect-goals-shift') }
+    ]);
+
+    document.getElementById('output-body').innerHTML = html;
+    var panel = document.getElementById('output-panel');
+    panel.style.display = 'block';
+    setTimeout(function() { panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+  }
+
+  function copyOutput() {
+    var fields = document.querySelectorAll('#output-body .out-field');
+    var text = 'FORMAL PIP RECORD\n';
+    text += '='.repeat(40) + '\n\n';
+    var phases = document.querySelectorAll('#output-body .out-phase');
+    var phaseMap = {};
+    phases.forEach(function(p) {
+      var next = p.closest('.out-block');
+      if (next) phaseMap[next] = p.innerText;
+    });
+    fields.forEach(function(f) {
+      var label = f.querySelector('.out-label');
+      var value = f.querySelector('.out-value, .goals-output');
+      if (label && value) {
+        text += label.innerText.toUpperCase() + '\n';
+        text += value.innerText + '\n\n';
+      }
+    });
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.querySelector('.btn-copy');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy to clipboard'; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
